@@ -8,7 +8,7 @@ void cleanBuffer(char value){
 int getTheMoney(double *amount){
     scanf(" %lf", amount);
     cleanBuffer(*amount);
-    if(amount<0){
+    if(*amount<0){
         printf(" input is amount, must be above 0\n");
         return 0;
     }
@@ -66,6 +66,8 @@ int main(){
                 printf("Amount?: \n");
                 if(getTheMoney(&amount)){
                     deposit(acc_id, amount);
+                }else{
+                    printf("deposit amount is in the negative, thus no action was taken");
                 }
                 break;
             case 'W':
@@ -85,6 +87,8 @@ int main(){
             case 'I':
                 if(getTheMoney(&amount)){
                     increaseInterestAll(amount);
+                }else{
+                    printf("Interest rate is in the negative, thus no action was taken");
                 }
                 break;
             case 'P':
