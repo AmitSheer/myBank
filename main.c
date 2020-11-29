@@ -1,13 +1,8 @@
 #include <stdio.h>
 #include "myBank.h"
 
-void cleanBuffer(char value){
-    while (getchar()!='\n'&&value!=EOF){}
-}
-
 int getTheMoney(double *amount){
     scanf(" %lf", amount);
-    cleanBuffer(*amount);
     if(*amount<0){
         printf(" input is amount, must be above 0\n");
         return 0;
@@ -35,11 +30,9 @@ int main(){
                "Transaction type?: \n"
         );
         scanf(" %c",&value);
-        cleanBuffer(value);
         if(value=='B'||value=='D'||value=='W'||value=='C'){
             printf("Account number?: \n");
             scanf(" %d", &acc_id);
-            cleanBuffer(value);
             if(!validateAccount(acc_id)){
                 printf("invalid account id\n");
                 value = 'U';
