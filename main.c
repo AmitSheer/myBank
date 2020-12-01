@@ -1,94 +1,100 @@
 #include <stdio.h>
+#include <ctype.h>
 #include "myBank.h"
 
-int getTheMoney(double *amount){
-    scanf(" %lf", amount);
-    if(*amount<0){
-        printf(" input is amount, must be above 0\n");
-        return 0;
-    }
-    return 1;
+int getTheMoney(double *amount) {
+    int numLength = scanf("%lf", amount);
+    return *amount > 0 || numLength;
 }
 
-int main(){
+int main() {
     char value;
     double amount;
     int acc_id;
-    do{
-        amount = 0;
+    int accountIsValid;
+    do {
+        value = ' ';
         acc_id = 0;
-        value = 'c';
-        printf("Transaction types: \n"
-               "To open a new account: 'O'\n"
-               "To see Balance: 'B'\n"
-               "To deposit: 'D'\n"
-               "To withdraw: 'W'\n"
-               "To close an account: 'C'\n"
-               "To interest: 'I'\n"
-               "To print all open accounts and their balance: 'P'\n"
-               "To close all accounts and program: 'E'\n"
-               "Transaction type?: \n"
+        amount = 0;
+        printf("Please choose a transaction type: \n"
+               " O-Open Account\n"
+               " B-Balance Inquiry\n"
+               " D-Deposit\n"
+               " W-Withdrawal\n"
+               " C-Close Account\n"
+               " I-Interest\n"
+               " P-Print\n"
+               " E-Exit\n"
         );
-        scanf(" %c",&value);
-        if(value=='B'||value=='D'||value=='W'||value=='C'){
-            printf("Account number?: \n");
+        scanf(" %c", &value);
+        if (value == 'B' || value == 'D' || value == 'W' || value == 'C') {
+            printf("Please enter account number: ");
             scanf(" %d", &acc_id);
-            if(!validateAccount(acc_id)){
-                printf("invalid account id\n");
-                value = 'U';
+            accountIsValid = validateAccount(acc_id);
+            if (!accountIsValid) {
+                printf("Failed to read the account number\n\n");
             }
         }
-        switch (value) {
-            case 'O':
-                printf("Initial deposit?: \n");
-                if(getTheMoney(&amount)){
-                    if(openNewAccount(amount)){
-                        printf("No space available\n");
-                    }
+        if (value == 'O') {
+            printf("Please enter amount for deposit: ");
+            if (getTheMoney(&amount)) {
+                acc_id = openNewAccount(amount);
+                if (acc_id == 1) {
+                    printf("No space available\n");
+                } else {
+                    printf("New account number is: %d\n\n", acc_id);
                 }
-                break;
-            case 'B':
+            }
+        } else if (value == 'B') {
+            if (accountIsValid) {
                 amount = getBalance(acc_id);
-                if(amount==-1){
-                    printf("account is currently closed\n");
-                }else{
-                    printf("Account number: %d, Balance: %.2lf \n",acc_id, amount);
+                if (amount == -1) {
+                    printf("This account is closed\n\n");
+                } else {
+                    printf("The balance of account number %d is: %.2lf\n\n", acc_id, amount);
                 }
-                break;
-            case 'D':
-                printf("Amount?: \n");
-                if(getTheMoney(&amount)){
+            }
+        } else if (value == 'D') {
+            if (accountIsValid) {
+                printf("Please enter amount for deposit:  \n");
+                if (getTheMoney(&amount)) {
                     deposit(acc_id, amount);
-                }else{
-                    printf("deposit amount is in the negative, thus no action was taken");
+                } else {
+                    printf("Failed to read the amount\n");
                 }
-                break;
-            case 'W':
-                printf("Amount?: \n");
-                if(getTheMoney(&amount)){
-                    amount =  withdraw(acc_id,amount);
-                    if (amount == -1){
-                        printf("Withdraw amount over reached, no withdrawal was preformed\n");
-                    }else{
-                        printf("Account number: %d, Balance: %lf \n",acc_id, withdraw(acc_id,amount));
+            }
+        } else if (value == 'W') {
+            if (accountIsValid) {
+                printf("Please enter the amount to withdraw: ");
+                if (getTheMoney(&amount)) {
+                    amount = withdraw(acc_id, amount);
+                    if (amount == -1) {
+                        printf("Cannot withdraw more than the balance\n\n");
+                    } else {
+                        printf("The new balance is: %.2lf \n\n", amount);
                     }
+                } else {
+                    printf("Failed to read the amount\n");
                 }
-                break;
-            case 'C':
+            }
+        } else if (value == 'I') {
+            printf("Please enter interest rate: ");
+            if (getTheMoney(&amount)) {
+                increaseInterestAll(amount);
+            } else {
+                printf("Failed to read the interest rate\n");
+            }
+            printf("\n");
+        } else if (value == 'P') {
+            printALlAccounts();
+        } else if (value == 'C' && accountIsValid) {
+            if (accountIsValid) {
                 closeAccount(acc_id);
-                break;
-            case 'I':
-                if(getTheMoney(&amount)){
-                    increaseInterestAll(amount);
-                }else{
-                    printf("Interest rate is in the negative, thus no action was taken");
-                }
-                break;
-            case 'P':
-                printALlAccounts();
-                break;
-            default:
-                break;
+            }
+        } else if (value == 'E') {
+            break;
+        } else {
+            printf("Invalid transaction type\n\n");
         }
-    }while(value!='E');
+    } while (value != 'E');
 }
