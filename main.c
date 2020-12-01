@@ -3,7 +3,7 @@
 #include "myBank.h"
 
 int getTheMoney(double *amount) {
-    int numLength = scanf("%lf", amount);
+    int numLength = scanf(" %lf", amount);
     return *amount > 0 || numLength;
 }
 
