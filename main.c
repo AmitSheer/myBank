@@ -12,7 +12,7 @@ int main() {
     double amount;
     int acc_id;
     int accountIsValid;
-    do {
+    while (1){
         value = ' ';
         acc_id = 0;
         amount = 0;
@@ -96,5 +96,5 @@ int main() {
         } else {
             printf("Invalid transaction type\n\n");
         }
-    } while (value != 'E');
+    }
 }
