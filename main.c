@@ -41,6 +41,7 @@ int main() {
         if (value == 'B' || value == 'D' || value == 'W' || value == 'C') {
             printf("Please enter account number: ");
             scanf(" %d", &acc_id);
+            //checks if account number is valid
             accountIsValid = validateAccount(acc_id);
             if (accountIsValid==0) {
                 printf("Failed to read the account number\n\n");
