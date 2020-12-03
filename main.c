@@ -1,57 +1,100 @@
 #include <stdio.h>
+#include <ctype.h>
 #include "myBank.h"
 
-int main(){
-    char value='a';
-    double amount = 0;
-    int acc_id = 0;
-    do{
-        printf("Transaction types: \n"
-               "To open a new account: 'O'\n"
-               "To see Balance: 'B'\n"
-               "To deposit: 'D'\n"
-               "To withdraw: 'W'\n"
-               "To close an account: 'C'\n"
-               "To interest: 'I'\n"
-               "To print all open accounts and their balance: 'P'\n"
-               "To close all accounts and program: 'E'\n"
-               "Transaction type?: \n"
+int getTheMoney(double *amount) {
+    int numLength = scanf(" %lf", amount);
+    return *amount > 0 || numLength;
+}
+
+int main() {
+    char value;
+    double amount;
+    int acc_id;
+    int accountIsValid;
+    while (1){
+        value = ' ';
+        acc_id = 0;
+        amount = 0;
+        printf("Please choose a transaction type: \n"
+               " O-Open Account\n"
+               " B-Balance Inquiry\n"
+               " D-Deposit\n"
+               " W-Withdrawal\n"
+               " C-Close Account\n"
+               " I-Interest\n"
+               " P-Print\n"
+               " E-Exit\n"
         );
-        scanf(" %c",&value);
-        switch (value) {
-            case 'O':
-                printf("Initial deposit?: \n");
-                scanf("%lf", &amount);
-                printf("account id: %d\n",openNewAccount(amount));
-                break;
-            case 'B':
-                printf("Account number?: \n");
-                scanf("%d", &acc_id);
-                if(validateAccount(acc_id)){
-                    printf("Account number: %d, Balance: %lf \n",acc_id, getBalance(acc_id));
-                }else{
-                    printf("invalid account id");
-                }
-                break;
-            case 'D':
-                printf("Account number?: \n");
-                scanf("%d", &acc_id);
-                if(validateAccount(acc_id)){
-                    printf("Account number: %d, Balance: %lf \n",acc_id, getBalance(acc_id));
-                }else{
-                    printf("invalid account id");
-                }
-                break;
-            case 'E':
-                printf("E");
-                break;
-            default:
-                while (value!='B'&&value!='O'&&value!='I'&&value!='D'&&value!='E'&&value!='W'&&value!='C'&&value!='P')
-                {
-                    getchar();
-                    scanf(" %c",&value);
-                }
-                break;
+        scanf(" %c", &value);
+        if (value == 'B' || value == 'D' || value == 'W' || value == 'C') {
+            printf("Please enter account number: ");
+            scanf(" %d", &acc_id);
+            accountIsValid = validateAccount(acc_id);
+            if (!accountIsValid) {
+                printf("Failed to read the account number\n\n");
+            }
         }
-    }while(value!='E');
+        if (value == 'O') {
+            printf("Please enter amount for deposit: ");
+            if (getTheMoney(&amount)) {
+                acc_id = openNewAccount(amount);
+                if (acc_id == 1) {
+                    printf("No space available\n");
+                } else {
+                    printf("New account number is: %d\n\n", acc_id);
+                }
+            }
+        } else if (value == 'B') {
+            if (accountIsValid) {
+                amount = getBalance(acc_id);
+                if (amount == -1) {
+                    printf("This account is closed\n\n");
+                } else {
+                    printf("The balance of account number %d is: %.2lf\n\n", acc_id, amount);
+                }
+            }
+        } else if (value == 'D') {
+            if (accountIsValid) {
+                printf("Please enter amount for deposit:  \n");
+                if (getTheMoney(&amount)) {
+                    deposit(acc_id, amount);
+                } else {
+                    printf("Failed to read the amount\n");
+                }
+            }
+        } else if (value == 'W') {
+            if (accountIsValid) {
+                printf("Please enter the amount to withdraw: ");
+                if (getTheMoney(&amount)) {
+                    amount = withdraw(acc_id, amount);
+                    if (amount == -1) {
+                        printf("Cannot withdraw more than the balance\n\n");
+                    } else {
+                        printf("The new balance is: %.2lf \n\n", amount);
+                    }
+                } else {
+                    printf("Failed to read the amount\n");
+                }
+            }
+        } else if (value == 'I') {
+            printf("Please enter interest rate: ");
+            if (getTheMoney(&amount)) {
+                increaseInterestAll(amount);
+            } else {
+                printf("Failed to read the interest rate\n");
+            }
+            printf("\n");
+        } else if (value == 'P') {
+            printALlAccounts();
+        } else if (value == 'C' && accountIsValid) {
+            if (accountIsValid) {
+                closeAccount(acc_id);
+            }
+        } else if (value == 'E') {
+            break;
+        } else {
+            printf("Invalid transaction type\n\n");
+        }
+    }
 }

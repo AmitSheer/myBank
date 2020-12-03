@@ -1,60 +1,79 @@
+#include "myBank.h"
 #include <stdio.h>
 #include <math.h>
 
-#include "myBank.h"
-
+//Max number of accounts allowed
 #define ACCOUNT_NUM 50
+//Accounts Prefix
 #define ACCOUNT_PREFIX 900
 
-//[open/closed][deposit]
-double accounts [ACCOUNT_NUM][2]= {0};
+//[open/closed][balance]
+double accounts[ACCOUNT_NUM][2] = {0};
 
-int validateAccount(int acc_id){
-    if(acc_id>ACCOUNT_PREFIX&&acc_id<=(ACCOUNT_PREFIX+ACCOUNT_NUM)){
+//validates account id
+int validateAccount(int acc_id) {
+    if (acc_id > ACCOUNT_PREFIX && acc_id <= (ACCOUNT_PREFIX + ACCOUNT_NUM)) {
         return 1;
-    }else{
+    } else {
         return 0;
     }
 }
 
-int openNewAccount(double init_deposit){
+int openNewAccount(double init_deposit) {
     for (int j = 0; j < ACCOUNT_NUM; ++j) {
-        if (accounts[j][0]==0){
-            accounts[j][0]=1;
-            init_deposit = init_deposit*100;
-            init_deposit = floor(init_deposit);
-            accounts[j][1]=init_deposit/100;
-            return 900+j+1;
-
+        if (accounts[j][0] == 0) {
+            //marks account as open
+            accounts[j][0] = 1;
+            //adds the current balance of account
+            accounts[j][1] = floor(init_deposit * 100) / 100;
+            return 900 + j + 1;
         }
     }
-    return -1;
+    return 1;
 }
 
-double getBalance(int acc_id){
-    if(accounts[acc_id-900-1][0]==1) {
-        return accounts[acc_id-900-1][1];
+float getBalance(int acc_id) {
+    if (accounts[acc_id - ACCOUNT_PREFIX - 1][0] == 1) {
+        return accounts[acc_id - ACCOUNT_PREFIX - 1][1];
     }
     return -1;
 }
-void addAmount(int acc_id, double deposit){
-    printf("addAmount %d, %.4lf\n", acc_id, deposit);
 
+void deposit(int acc_id, float deposit) {
+    if (accounts[acc_id - ACCOUNT_PREFIX - 1][0] == 1 && deposit >= 0) {
+        accounts[acc_id - ACCOUNT_PREFIX - 1][1] = accounts[acc_id - ACCOUNT_PREFIX - 1][1] + deposit;
+    }
 }
-double withdraw(int acc_id, double withdrawalAmount){
-    printf("getAmount %d, %.4lf\n", acc_id, withdrawalAmount);
 
-    return 0.0;
+float withdraw(int acc_id, float withdrawalAmount) {
+    if (accounts[acc_id - ACCOUNT_PREFIX - 1][0] == 1 &&
+        (accounts[acc_id - ACCOUNT_PREFIX - 1][1] - withdrawalAmount) >= 0) {
+        accounts[acc_id - ACCOUNT_PREFIX - 1][1] = accounts[acc_id - ACCOUNT_PREFIX - 1][1] - withdrawalAmount;
+        return (accounts[acc_id - ACCOUNT_PREFIX - 1][1]);
+    }
+    return -1;
 }
-void closeAccount(int acc_id){
-    printf("close %d\n", acc_id);
 
+void closeAccount(int acc_id) {
+    if (accounts[acc_id - ACCOUNT_PREFIX - 1][0]) {
+        accounts[acc_id - ACCOUNT_PREFIX - 1][0] = 0;
+    }
 }
-void increaseInterestAll(double interest){
-    printf("increaseInterestAll %.4lf\n", interest);
 
+void increaseInterestAll(double interest) {
+    for (int i = 0; i < ACCOUNT_NUM; ++i) {
+        if (accounts[i][0]) {
+            accounts[i][1] = accounts[i][1] + (accounts[i][1] * interest / 100);
+            //printf("increaseInterestAll %.2lf\n", accounts[i][1]);
+        }
+    }
 }
-void printALlAccounts(){
-    printf("printALlAccounts\n");
 
+void printALlAccounts() {
+    for (int i = 0; i < ACCOUNT_NUM; ++i) {
+        if (accounts[i][0]) {
+            printf("The balance of account number %d is: %.2lf\n", i + ACCOUNT_PREFIX + 1, accounts[i][1]);
+        }
+    }
+    printf("\n");
 }
