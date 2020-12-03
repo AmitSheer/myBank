@@ -14,7 +14,9 @@ double accounts[ACCOUNT_NUM][2] = {0};
 int validateAccount(int acc_id) {
     if (acc_id > ACCOUNT_PREFIX && acc_id <= (ACCOUNT_PREFIX + ACCOUNT_NUM)) {
         return 1;
-    } else {
+    } else if (acc_id<0||acc_id > (ACCOUNT_PREFIX + ACCOUNT_NUM)){
+        return -1;
+    }else{
         return 0;
     }
 }
@@ -39,10 +41,12 @@ float getBalance(int acc_id) {
     return -1;
 }
 
-void deposit(int acc_id, float deposit) {
+double deposit(int acc_id, float deposit) {
     if (accounts[acc_id - ACCOUNT_PREFIX - 1][0] == 1 && deposit >= 0) {
         accounts[acc_id - ACCOUNT_PREFIX - 1][1] = accounts[acc_id - ACCOUNT_PREFIX - 1][1] + deposit;
+        return accounts[acc_id - ACCOUNT_PREFIX - 1][1];
     }
+    return 0;
 }
 
 float withdraw(int acc_id, float withdrawalAmount) {
@@ -76,4 +80,8 @@ void printALlAccounts() {
         }
     }
     printf("\n");
+}
+
+int accountIsOpen(int acc_id){
+    return accounts[acc_id-ACCOUNT_PREFIX-1][0];
 }

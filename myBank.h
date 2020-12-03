@@ -8,9 +8,10 @@
 int validateAccount(int acc_id);
 int openNewAccount(double init_deposit);
 float getBalance(int acc_id);
-void deposit(int acc_id, float deposit);
+double deposit(int acc_id, float deposit);
 float withdraw(int acc_id, float withdrawalAmount);
 void closeAccount(int acc_id);
 void increaseInterestAll(double interest);
 void printALlAccounts();
+int accountIsOpen(int acc_id);
 #endif
